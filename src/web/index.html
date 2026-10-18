@@ -53,7 +53,7 @@
     .page {
       max-width: 1180px;
       margin: 0 auto;
-      padding: 0 16px 64px;
+      padding: 0 16px 24px;
     }
 
     /* ── Header ─────────────────────────────────────────────────────── */
@@ -358,10 +358,8 @@
 
     /* ── Footer ─────────────────────────────────────────────────────── */
     footer {
-      margin-top: 64px;
-      border-top: 4px solid transparent;
-      border-image: var(--gbh-gradient) 1;
-      padding-top: 24px;
+      margin-top: 24px;
+      padding-top: 0;
       text-align: center;
       font-size: 13px;
       color: var(--gbh-muted);
@@ -384,6 +382,7 @@
       vertical-align: middle;
     }
     .rate-bar-fill {
+      display: block;
       height: 100%;
       background: #C0392B;
       border-radius: 100px;

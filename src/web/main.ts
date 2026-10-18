@@ -97,13 +97,20 @@ export function renderTrendChart(trend: TrendPoint[]): void {
   const chartH = H - PAD.top - PAD.bottom;
 
   const n = trend.length;
+
+  // Zoomed y-domain: floor the minimum to the nearest 5% below (min − 5%), clamped ≥ 0
+  const minRate = Math.min(...trend.map(p => p.passRate));
+  const domainMin = Math.max(0, Math.floor((minRate - 0.05) * 20) / 20);
+  const domainMax = 1.0;
+  const domainSpan = domainMax - domainMin;
+
   const xScale = (i: number) => PAD.left + (i / (n - 1)) * chartW;
-  const yScale = (v: number) => PAD.top + chartH - v * chartH;
+  const yScale = (v: number) => PAD.top + chartH - ((v - domainMin) / domainSpan) * chartH;
 
   // Build polyline points
   const pts = trend.map((p, i) => `${xScale(i)},${yScale(p.passRate)}`).join(' ');
 
-  // Area path (filled under the line)
+  // Area path (filled under the line) — baseline at domainMin
   const areaPath =
     `M ${xScale(0)},${yScale(trend[0].passRate)} ` +
     trend.slice(1).map((p, i) => `L ${xScale(i + 1)},${yScale(p.passRate)}`).join(' ') +
@@ -121,14 +128,15 @@ export function renderTrendChart(trend: TrendPoint[]): void {
     );
   }
 
-  // Y axis labels — 0%, 25%, 50%, 75%, 100%
+  // Y axis labels — 5% ticks from domainMin to 100%
   const yLabels: string[] = [];
-  const yTicks = [0, 0.25, 0.5, 0.75, 1.0];
   const gridLines: string[] = [];
-  for (const v of yTicks) {
+  // Build ticks at every 5% step from domainMin to domainMax
+  const tickStep = 0.05;
+  for (let v = domainMin; v <= domainMax + 0.001; v = Math.round((v + tickStep) * 1000) / 1000) {
     const y = yScale(v);
     yLabels.push(
-      `<text x="${PAD.left - 8}" y="${y + 4}" text-anchor="end" font-size="11" fill="#636466">${(v * 100).toFixed(0)}%</text>`
+      `<text x="${PAD.left - 8}" y="${y + 4}" text-anchor="end" font-size="11" fill="#636466">${Math.round(v * 100)}%</text>`
     );
     gridLines.push(
       `<line x1="${PAD.left}" y1="${y}" x2="${PAD.left + chartW}" y2="${y}" stroke="#D5D7D8" stroke-width="1" stroke-dasharray="3,3"/>`
@@ -138,7 +146,7 @@ export function renderTrendChart(trend: TrendPoint[]): void {
   container.innerHTML = `
     <svg viewBox="0 0 ${W} ${H}" aria-labelledby="trend-title trend-desc" role="img">
       <title id="trend-title">30-day pass-rate trend</title>
-      <desc id="trend-desc">Line chart showing daily test pass rate over the last 30 days, ranging from ${fmtPct(Math.min(...trend.map(p => p.passRate)))} to ${fmtPct(Math.max(...trend.map(p => p.passRate)))}</desc>
+      <desc id="trend-desc">Line chart showing daily test pass rate over the last 30 days, y-axis from ${Math.round(domainMin * 100)}% to 100%, ranging from ${fmtPct(Math.min(...trend.map(p => p.passRate)))} to ${fmtPct(Math.max(...trend.map(p => p.passRate)))}</desc>
 
       <!-- Grid lines -->
       ${gridLines.join('\n')}
