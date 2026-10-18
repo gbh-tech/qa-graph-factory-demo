@@ -70,7 +70,7 @@ export function buildTrend(results: TestResult[], runs: TestRun[], days = 30): T
 
   const trend: TrendPoint[] = [];
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  today.setUTCHours(0, 0, 0, 0);
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
