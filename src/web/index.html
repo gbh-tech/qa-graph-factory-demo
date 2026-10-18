@@ -71,14 +71,12 @@
       align-items: flex-start;
       gap: 24px;
     }
-    .logo-slot {
-      min-width: 57px;
-      width: 57px;
-      height: 40px;
-      border: 1.5px solid rgba(255,255,255,0.25);
-      border-radius: var(--radius-sm);
+    .logo {
+      /* approved GBH master asset (white variant on navy); aspect ratio preserved, never < 57px wide */
+      height: 48px;
+      width: auto;
       flex-shrink: 0;
-      /* reserved empty logo slot */
+      margin-right: 24px; /* clear space */
     }
     .wordmark { flex: 1; }
     .wordmark-eyebrow {
@@ -402,7 +400,7 @@
 
   <header role="banner">
     <div class="header-inner">
-      <div class="logo-slot" aria-hidden="true"></div>
+      <img class="logo" src="/gbh-logo-white.svg" alt="GBH, 20 years">
       <div class="wordmark">
         <p class="wordmark-eyebrow">Quality dashboard</p>
         <h1 class="wordmark-name">TestPulse</h1>
