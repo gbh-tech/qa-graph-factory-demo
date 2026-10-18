@@ -205,7 +205,7 @@ function dayOffset(daysBack: number): Date {
 
 // --- Build seed data ---
 mkdirSync('data', { recursive: true });
-const DB_FILE = 'data/testpulse.db';
+const DB_FILE = process.env.DB_PATH ?? 'data/testpulse.db';
 if (existsSync(DB_FILE)) rmSync(DB_FILE);
 
 const db = openDb(DB_FILE);

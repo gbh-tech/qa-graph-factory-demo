@@ -10,5 +10,5 @@
     "lib": ["ES2023", "DOM"],
     "types": ["node"]
   },
-  "include": ["src", "seed", "tests"]
+  "include": ["src", "src/web", "seed", "tests"]
 }
