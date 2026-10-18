@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="api" hostname="ci-runner-01" timestamp="2026-10-18T16:00:00" time="14.567">
+  <properties>
+    <property name="run.id" value="sample-junit-run-001"/>
+    <property name="branch" value="main"/>
+    <property name="commit" value="f1a2b3c"/>
+  </properties>
+  <testcase classname="auth.spec" name="login successfully" time="0.245"/>
+  <testcase classname="auth.spec" name="logout clears session" time="0.133"/>
+  <testcase classname="auth.spec" name="rejects invalid credentials" time="0.089"/>
+  <testcase classname="users.spec" name="creates a new user" time="0.312"/>
+  <testcase classname="users.spec" name="returns user by id" time="0.078"/>
+  <testcase classname="users.spec" name="deletes user account" time="0.201">
+    <failure message="Expected status 204 but got 500">AssertionError: Expected status 204 but got 500
+  at users.spec:88</failure>
+  </testcase>
+  <testcase classname="products.spec" name="lists products" time="0.156"/>
+  <testcase classname="products.spec" name="filters by category" time="0.234"/>
+  <testcase classname="health.spec" name="liveness probe" time="0.012"/>
+  <testcase classname="health.spec" name="readiness probe" time="0.019">
+    <skipped/>
+  </testcase>
+</testsuite>

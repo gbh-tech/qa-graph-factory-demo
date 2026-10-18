@@ -1,0 +1,22 @@
+{
+  "run": {
+    "id": "sample-json-run-001",
+    "suite": "web",
+    "branch": "feature/new-checkout",
+    "commit": "d4e5f6a",
+    "startedAt": "2026-10-18T17:00:00Z",
+    "durationMs": 9200
+  },
+  "results": [
+    { "testId": "web::login.spec::renders login form", "name": "renders login form", "status": "pass", "durationMs": 245 },
+    { "testId": "web::login.spec::validates email format", "name": "validates email format", "status": "pass", "durationMs": 133 },
+    { "testId": "web::checkout.spec::applies discount coupon", "name": "applies discount coupon", "status": "pass", "durationMs": 891 },
+    { "testId": "web::checkout.spec::calculates shipping cost", "name": "calculates shipping cost", "status": "pass", "durationMs": 456 },
+    { "testId": "web::cart.spec::adds item to cart", "name": "adds item to cart", "status": "pass", "durationMs": 189 },
+    { "testId": "web::cart.spec::removes item from cart", "name": "removes item from cart", "status": "pass", "durationMs": 201 },
+    { "testId": "web::search.spec::basic keyword search", "name": "basic keyword search", "status": "pass", "durationMs": 678 },
+    { "testId": "web::profile.spec::displays user profile", "name": "displays user profile", "status": "pass", "durationMs": 312 },
+    { "testId": "web::navigation.spec::404 page renders", "name": "404 page renders", "status": "pass", "durationMs": 98 },
+    { "testId": "web::navigation.spec::header links are correct", "name": "header links are correct", "status": "fail", "durationMs": 156, "message": "Expected href '/home' but got '/'" }
+  ]
+}
