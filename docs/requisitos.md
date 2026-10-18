@@ -18,7 +18,7 @@ Un reporte mayor a `MAX_REPORT_BYTES` se rechaza con `ReportTooLargeError`.
 Implementado por `validateReport` e `ingestReport`.
 
 ## REQ-004 — Detección de pruebas inestables
-Una prueba es inestable (flaky) si alterna entre aprobada y fallida al menos 2 veces en la ventana de 30 días.
+Una prueba es inestable (flaky) si alterna entre aprobada y fallida al menos 2 veces en la ventana de 30 días y su tasa de fallo está entre 25 % y 85 % (por debajo es ruido; por encima, una falla real).
 Implementado por `detectFlakyTests`.
 
 ## REQ-005 — Tasa de aprobación
