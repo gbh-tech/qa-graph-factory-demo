@@ -144,11 +144,84 @@ Connections (5):
 Respuesta completa: llamador, prueba y requisito — todo EXTRACTED.
 
 ## Cambio en vivo
-Rama `demo/live-change`: cambio en `classifyResult()`.
-1. Preguntar al grafo qué pruebas dependen de `classifyResult`.
-2. Correr solo esas: `npx vitest run <archivos>` → fallan.
-3. Ajustar y correr la suite completa para confirmar.
-_(Detalle en Fase 5)_
+
+**Historia:** producto decide que `pending` significa que el entorno
+rompió antes de ejecutar la prueba, así que debe contar como `error`
+(afecta la tasa de aprobación), no como `skipped`.
+
+### Paso 1 — Preguntar al grafo qué pruebas debo correr
+
+```
+graphify explain "classifyResult"
+```
+
+Salida real (extracto):
+```
+Node: classifyResult()
+  Source: src/server/services/ingest.ts L10  Community: 3  Degree: 6
+Connections (6):
+  <-- ingest.ts       [contains]   [EXTRACTED]
+  <-- ingest.test.ts  [imports]    [EXTRACTED]   ← test directo
+  <-- junit.ts        [imports]    [EXTRACTED]   ← parser lo llama
+  <-- json.ts         [imports]    [EXTRACTED]   ← parser lo llama
+  <-- POST /api/runs  [references] [EXTRACTED]
+  <-- REQ-005         [references] [EXTRACTED]
+```
+
+```
+graphify path "parsers.test" "classifyResult"
+```
+
+```
+Shortest path (2 hops):
+  parsers.test.ts --imports_from--> junit.ts --imports--> classifyResult()
+```
+
+**Conclusión del grafo:** correr `tests/unit/ingest.test.ts` (directo)
+y `tests/unit/parsers.test.ts` (indirecto, 2 saltos vía parser).
+
+### Paso 2 — Ir al commit donde el código cambió pero los tests no
+
+```bash
+git switch -d demo/live-change~1   # commit 1016712: feat: treat pending as error
+```
+
+### Paso 3 — Correr solo los archivos seleccionados → rojo
+
+```bash
+npx vitest run tests/unit/ingest.test.ts tests/unit/parsers.test.ts
+```
+
+Salida real:
+```
+ ❯ tests/unit/ingest.test.ts (30 tests | 1 failed)
+   × normalises "pending" → skipped
+
+AssertionError: expected 'error' to be 'skipped'
+  Expected: "skipped"
+  Received: "error"
+
+ Test Files  1 failed | 1 passed (2)
+     Tests   1 failed | 56 passed (57)
+```
+
+### Paso 4 — Avanzar al commit con los tests corregidos → verde
+
+```bash
+git switch demo/live-change        # commit 39c5e3c: test: update expectations
+npx vitest run
+```
+
+```
+ Test Files  5 passed (5)
+     Tests   100 passed (100)
+```
+
+### Paso 5 — Volver a main
+
+```bash
+git switch main
+```
 
 ---
 **Cierre (lámina 11):** ¿Qué pregunta de tu día a día sería más fácil de responder si pudieras consultar sus relaciones?
@@ -168,6 +241,26 @@ Los god nodes por grado (dirigido) son: TestRun=12, TestResult=12, scripts=10, g
 
 ### Q6 — Blind spot confirmado
 `ingestReport` no aparece como llamador de `parseJunitXml` porque el despacho es dinámico (`PARSERS[format](rawBody)`). Los bordes EXTRACTED solo muestran `unit_parsers_test` e `parsers_index`. La etiqueta EXTRACTED en el edge de `parsers_index` es correcta: el index.ts sí importa `parseJunitXml` explícitamente para construir el mapa.
+
+### Q6 — Insight para ensayo: `graphify path "ingestReport" "parseJunitXml"`
+
+Ejecutar este comando durante la demo produce:
+
+```
+Shortest path (2 hops):
+  ingestReport() --references_from--> REQ-001: JUnit XML Report Ingestion
+    --references--> parseJunitXml()
+```
+
+El camino más corto pasa por el nodo de **requisito** (REQ-001), no por el código.
+El grafo une `ingestReport` y `parseJunitXml` porque ambos están nombrados en
+`docs/requisitos.md`, no porque haya un `import` o `call` estático entre ellos.
+
+Mensaje al público: leer la etiqueta del edge importa. Un borde `[references]`
+entre dos funciones a través de un REQ es documentación, no una llamada en
+tiempo de ejecución. La llamada real existe — vía `PARSERS[format]` — pero el
+análisis estático no la ve. El grafo dice la verdad; el presentador debe leer
+la evidencia antes de concluir.
 
 ### Edges INFERRED vs EXTRACTED
 Todos los edges REQ→función son EXTRACTED (nombrados explícitamente en requisitos.md). Los edges REQ→endpoint son INFERRED (0.95) porque la relación es estructural pero no cita la URL. El edge del grafo que conecta REQ-008 con el endpoint de export es INFERRED.
