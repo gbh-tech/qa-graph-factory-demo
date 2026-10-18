@@ -1,0 +1,8 @@
+node_modules/
+data/
+test-results/
+playwright-report/
+docs/screenshots/
+graphify-out/
+docs/guion-demo.md
+CLAUDE.md
