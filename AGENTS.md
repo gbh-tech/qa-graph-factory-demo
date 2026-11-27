@@ -5,9 +5,9 @@ See `CLAUDE.md` for the project rules (graph-friendly coding, deliberate plants)
 ## Factory job environment
 
 Jobs run the scripts in `factory/`. Change them in the same change as anything a job needs:
-a new dependency manager or tool version (`mise.toml`), a new service or port (`factory/compose.yml`),
+a new dependency manager or tool version, a new service or port (`factory/compose.yml`),
 a new variable, a changed command, a new test suite. Prove the change with `factory-env validate`
-and `factory-env run test`. Tools are pinned in `mise.toml`. Services run on 127.0.0.1 at the ports
+and `factory-env run test`. Services run on 127.0.0.1 at the ports
 in `factory/compose.yml`; there is no Docker inside a job.
 
 Project facts: no external services (SQLite via `node:sqlite`, Node 24). The gate runs `npm run typecheck`
